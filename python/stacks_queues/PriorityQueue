@@ -1,0 +1,86 @@
+class PriorityQueueItem:
+    def __init__(self, value, priority):
+        # Create an item with a value and priority
+        self.value = value  # The value of the item
+        self.priority = priority  # The priority of the item (higher value = higher priority)
+
+    def __lt__(self, other):
+        # Compare items based on their priority (higher priority comes first)
+        return self.priority > other.priority  # Inverse the comparison to make higher priority come first
+
+class PriorityQueue:
+    def __init__(self):
+        # Initialize an empty priority queue
+        self.heap = []  # List to store the heap
+
+    def insert(self, value, priority):
+        # Insert a new item into the priority queue
+        item = PriorityQueueItem(value, priority)  # Create a new item
+        self.heap.append(item)  # Add the item to the heap
+        self._bubble_up(len(self.heap) - 1)  # Ensure heap property is maintained
+
+    def remove(self):
+        # Remove and return the item with the highest priority
+        if len(self.heap) == 0:
+            return None  # Return None if the queue is empty
+        self._swap(0, len(self.heap) - 1)  # Swap the root with the last item
+        item = self.heap.pop()  # Remove the last item
+        self._bubble_down(0)  # Ensure heap property is maintained
+        return item
+
+    def peek(self):
+        # Return the item with the highest priority without removing it
+        if len(self.heap) > 0:
+            return self.heap[0]
+        return None
+
+    def size(self):
+        # Return the size of the priority queue
+        return len(self.heap)
+
+    def _bubble_up(self, index):
+        # Move the item up to restore heap property
+        while index > 0:
+            parent_index = (index - 1) // 2
+            if self.heap[index] < self.heap[parent_index]:
+                self._swap(index, parent_index)  # Swap if the current item has higher priority
+                index = parent_index
+            else:
+                break
+
+    def _bubble_down(self, index):
+        # Move the item down to restore heap property
+        left_child_index = 2 * index + 1
+        right_child_index = 2 * index + 2
+        largest = index
+        
+        # Check if left child has higher priority
+        if left_child_index < len(self.heap) and self.heap[left_child_index] < self.heap[largest]:
+            largest = left_child_index
+        
+        # Check if right child has higher priority
+        if right_child_index < len(self.heap) and self.heap[right_child_index] < self.heap[largest]:
+            largest = right_child_index
+        
+        # If the largest is not the current item, swap and continue
+        if largest != index:
+            self._swap(index, largest)
+            self._bubble_down(largest)
+
+    def _swap(self, i, j):
+        # Swap two elements in the heap
+        self.heap[i], self.heap[j] = self.heap[j], self.heap[i]
+
+# Example usage:
+if __name__ == "__main__":
+    pq = PriorityQueue()
+
+    # Insert items into the queue
+    pq.insert("task1", 3)
+    pq.insert("task2", 5)
+    pq.insert("task3", 2)
+
+    # Print and remove items based on priority
+    while pq.size() > 0:
+        item = pq.remove()
+        print(f"Removed: {item.value} with priority {item.priority}")
